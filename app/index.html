@@ -17,156 +17,20 @@
   <!-- endbuild -->
   <!-- build:css(.tmp) styles/main.css -->
   <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/activity_tree.css">
+
   <!-- endbuild -->
   <!-- build:js scripts/vendor/modernizr.js -->
   <script src="/bower_components/modernizr/modernizr.js"></script>
   <!-- endbuild -->
 
+  <!-- mustache templates -->
+
+
+
+  <!-- end mustache templates -->
 </head>
 
-
-
-
-
-<style type="text/css">
-
-  #sTree2 li div.btn-group.navbar-right, #sortableListsBase li div.btn-group.navbar-right
-  {   padding: 0px;
-    margin-top: -7px;
-    margin-right: -5px;
-    margin-left: 25px;
-    border: 0px}
-
-
-
-
-  ul#sTree2, li#sTree2 { margin:0; padding:0; }
-  #sTree2 ul, #sTree2 li, #sortableListsBase ul, #sortableListsBase li
-  {
-    list-style-type:none;
-    color:rgb(64, 120, 192);
-    border:1px solid #c1dce9;
-  }
-
-
-
-  ul.sTree, #sTree2 ul,  #sortableListsBase ul{ padding:0px; background-color:#f5f5f5; }
-  ul.sTree2 li, ul#sortableListsBase li { padding-left:40px; margin:5px; border:1px solid #c1dce9; background-color:#e6f1f6; }
-
-  #sTree2 li div, #sortableListsBase li div { padding:10px; background-color:#fff; border:1px solid #c1dce9; }
-
-  /*#sTree2 li, #sortableListsBase li, #sTree2 ul, #sortableListsBase ul,  #sTree2 div, #sortableListsBase div { border-radius: 3px; }
-*/
-  body {
-    /* Margin bottom by footer height */
-    margin-bottom: 60px;
-    /* padding-top: 50px;*/
-  }
-
-  body > .container {
-    padding: 60px 15px 0;
-  }
-
-  .red { background-color:#ff9999; }
-  .blue { background-color:#aaaaff;}
-  .green { background-color:#99ff99; }
-  .gree2 { background-color:#bbffbb; }
-  .yellow { background-color:#ff8; }
-  .brown { background-color:#c26b2b; }
-  .pT20 { padding-top:20px; }
-  .pV10 { padding-top:10px; padding-bottom:10px; }
-  .dN { display:none; }
-  .dIB { display:inline-block; }
-  .vAM { vertical-align: text-bottom; }
-  .zI1000 { z-index:1000; }
-  .c1 { color:#b5e853; }
-  .c2 { color:#63c0f5; }
-  .c3 { color: #f77720; }
-  .c4 { color: #888; }
-  .c5 { color: #666667; }
-  .c6 { color: #888; }
-  .bgC1 { background-color:#ccc; }
-  .bgC2 { background-color:#ff8; }
-  .small1 { font-size:0.8em; }
-  .small2 { font-size:0.7em; }
-  .small3 { font-size:0.6em; }
-  .tAR { text-align:right; }
-  .clear { clear:both; }
-  img.descPicture { display:block; width:100%; margin:0 7px 30px 0; float:left; cursor:pointer; /*transition: all 0.5s ease;*/ }
-  img.descPicture.descPictureClose { width:150px; }
-  #sTree2 { margin:10px auto; }
-
-</style>
-
-
-<script type="text/javascript">
-  $(function()
-  {
-    var options = {
-      placeholderCss: {'background-color': '#ff8'},
-      hintCss: {'background-color':'#bbf'},
-      isAllowed: function(cEl, hint, target)
-      {
-        // Be carefull if you test some ul/ol elements here.
-        // Sometimes ul/ols are dynamically generated and so they have not some attributes as natural ul/ols.
-        // Be careful also if the hint is not visible. It has only display none so it is at the previouse place where it was before(excluding first moves before showing).
-        if(hint.parents('li').first().data('module') === 'c' && cEl.data('module') !== 'c')
-        {
-          hint.css('background-color', '#ff9999');
-          return false;
-        }
-        else
-        {
-          hint.css('background-color', '#99ff99');
-          return true;
-        }
-      },
-      opener: {
-        active: true,
-        close: './imgs/Remove2.png',
-        open: './imgs/Add2.png',
-        openerCss: {
-          'display': 'inline-block',
-          'width': '18px',
-          'height': '18px',
-          'float': 'left',
-          'margin-left': '-35px',
-          'margin-right': '5px',
-          'background-position': 'center center',
-          'background-repeat': 'no-repeat'
-        },
-        openerClass: ''
-      },
-      ignoreClass: 'clickable'
-    };
-
-    $('#sTree2, #sTree').sortableLists(options);
-
-    $('#toArrBtn').on('click', function(){ console.log($('#sTree2').sortableListsToArray()); });
-    $('#toHierBtn').on('click', function() { console.log($('#sTree2').sortableListsToHierarchy()); });
-    $('#toStrBtn').on('click', function() { console.log($('#sTree2').sortableListsToString()); });
-
-    $('.descPicture').on('click', function(e) { $(this).toggleClass('descPictureClose'); });
-    $('.clickable').on('click', function(e)	{ alert('Click works fine! IgnoreClass stops onDragStart event.'); });
-
-    /* Scrolling anchors */
-    $('#toPictureAnch').on('click', function(e) { scrollToAnch('pictureAnch'); });
-    $('#toBaseElementAnch').on('click', function(e) { scrollToAnch('baseElementAnch'); });
-    $('#toBaseElementAnch2').on('click', function(e) { scrollToAnch('baseElementAnch'); });
-    $('#toCssPatternAnch').on('click', function(e) { scrollToAnch('cssPatternAnch'); });
-
-    function scrollToAnch(id)
-    {
-      $('html, body').animate({
-        scrollTop: $("#" + id).offset().top
-      }, 750);
-      return false;
-    }
-
-  });
-
-</script>
-</head>
 <body>
 <div class="container">
 
@@ -269,7 +133,7 @@
           <div class="btn-group navbar-right" role="group" aria-label="..." >
             <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-eye-open clickable" aria-hidden="true"></span></button>
             <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-cog clickable" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-trash clickable" aria-hidden="true"></span></button>
+            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-trash clickable deleteBtn" aria-hidden="true"></span></button>
           </div>
 
 
@@ -371,6 +235,51 @@
 <!-- endbuild -->
 
 
+<script id="container_template" type="x-tmpl-mustache">
+
+        <li id="{{ container_uri  }}"  data-module="container">
+          <div>
+          <a href="#" class="h5"><span class="glyphicon glyphicon-folder-open clickable" aria-hidden="true"></span>  &nbsp;  {{container_name}}</a>
+
+          <div class="btn-group navbar-right" role="group" aria-label="..." >
+            <button type="button" class="btn btn-default">Flujo</button>
+            <button type="button" class="btn btn-default">Reglas</button>
+            <button type="button" class="btn btn-default">Rollup </button>
+          </div>
+
+          <div class="btn-group navbar-right" role="group" aria-label="..." >
+            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-eye-open clickable" aria-hidden="true"></span></button>
+            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-cog clickable" aria-hidden="true"></span></button>
+            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-trash clickable  deleteBtn" aria-hidden="true"></span></button>
+          </div>
+        </div>
+ </li>
+</script>
+
+
+<script id="activity_template" type="x-tmpl-mustache">
+
+        <li id="{{ activity_uri  }}"  data-module="activity">
+          <div>
+          <a href="#" class="h5"><span class="glyphicon glyphicon-file clickable" aria-hidden="true"></span>  &nbsp;  {{activity_name}}</a>
+
+          <div class="btn-group navbar-right" role="group" aria-label="..." >
+            <button type="button" class="btn btn-default">Flujo</button>
+            <button type="button" class="btn btn-default">Reglas</button>
+            <button type="button" class="btn btn-default">Rollup </button>
+          </div>
+
+          <div class="btn-group navbar-right" role="group" aria-label="..." >
+            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-eye-open clickable" aria-hidden="true"></span></button>
+            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-cog clickable" aria-hidden="true"></span></button>
+            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-trash clickable  deleteBtn" aria-hidden="true"></span></button>
+          </div>
+        </div>
+ </li>
+</script>
+
+
+
 <!-- build:js(.) scripts/plugins.js -->
 <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/affix.js"></script>
 <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/alert.js"></script>
@@ -385,8 +294,8 @@
 <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/collapse.js"></script>
 <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/tab.js"></script>
 <script src="/bower_components/jquery-sortable-lists/jquery-sortable-lists.js"></script>
-<script src="/bower_components/fuelux/all.js"></script>
-
+<script src="/bower_components/fuelux/js/all.js"></script>
+<script src="/bower_components/mustache.js/mustache.js"></script>
 
 
 <!-- endbuild -->
@@ -403,10 +312,121 @@
     e.src='https://www.google-analytics.com/analytics.js';
     r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
   ga('create','UA-XXXXX-X');ga('send','pageview');
+
+
+  function generateUUID() {
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = (d + Math.random() * 16) % 16 | 0;
+      d = Math.floor(d / 16);
+      return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+    return uuid;
+  }
+
 </script>
 
 
 
+<script type="text/javascript">
+  $(function()
+  {
+    var options = {
+      placeholderCss: {'background-color': '#ff8'},
+      hintCss: {'background-color':'#bbf'},
+      isAllowed: function(cEl, hint, target)
+      {
+        // Be carefull if you test some ul/ol elements here.
+        // Sometimes ul/ols are dynamically generated and so they have not some attributes as natural ul/ols.
+        // Be careful also if the hint is not visible. It has only display none so it is at the previouse place where it was before(excluding first moves before showing).
+        if(hint.parents('li').first().data('module') === 'c' && cEl.data('module') !== 'c')
+        {
+          hint.css('background-color', '#ff9999');
+          return false;
+        }
+        else
+        {
+          hint.css('background-color', '#99ff99');
+          return true;
+        }
+      },
+      opener: {
+        active: true,
+        close: './images/Remove2.png',
+        open: './images/Add2.png',
+        openerCss: {
+          'display': 'inline-block',
+          'width': '18px',
+          'height': '18px',
+          'float': 'left',
+          'margin-left': '-35px',
+          'margin-right': '5px',
+          'background-position': 'center center',
+          'background-repeat': 'no-repeat'
+        },
+        openerClass: ''
+      },
+      ignoreClass: 'clickable'
+    };
+
+    $('#sTree2, #sTree').sortableLists(options);
+
+    $('#toArrBtn').on('click', function(){ console.log($('#sTree2').sortableListsToArray()); });
+    $('#toHierBtn').on('click', function() { console.log($('#sTree2').sortableListsToHierarchy()); });
+    $('#toStrBtn').on('click', function() { console.log($('#sTree2').sortableListsToString()); });
+
+    $('.descPicture').on('click', function(e) { $(this).toggleClass('descPictureClose'); });
+    //$('.clickable').on('click', function(e)	{ alert('Click works fine! IgnoreClass stops onDragStart event.'); });
+
+    /* Scrolling anchors */
+    $('#toPictureAnch').on('click', function(e) { scrollToAnch('pictureAnch'); });
+    $('#toBaseElementAnch').on('click', function(e) { scrollToAnch('baseElementAnch'); });
+    $('#toBaseElementAnch2').on('click', function(e) { scrollToAnch('baseElementAnch'); });
+    $('#toCssPatternAnch').on('click', function(e) { scrollToAnch('cssPatternAnch'); });
+
+    function scrollToAnch(id)
+    {
+      $('html, body').animate({
+        scrollTop: $("#" + id).offset().top
+      }, 750);
+      return false;
+    }
+
+
+
+    $('#newContainerBtn').on('click', function(){
+
+      var container_template = $('#container_template').html();
+      console.log(container_template);
+      Mustache.parse(container_template);
+      rendered = Mustache.render(container_template, { container_uri:generateUUID(), container_name:"Container Name"});
+      $("#sTree2").append(rendered);
+    });
+
+
+    $('body').on('click', '.deleteBtn', function(){
+      $( this).parentsUntil('li').parent().remove();
+    });
+
+
+    $('#newActivityBtn').on('click', function(){
+
+      var activity_template = $('#activity_template').html();
+      console.log(activity_template);
+      Mustache.parse(activity_template);
+      rendered = Mustache.render(activity_template, { activity_uri:generateUUID(), activity_name:"Activity Name"});
+      $("#sTree2").append(rendered);
+    });
+
+
+
+
+  });
+
+
+
+
+</script>
 
 
 
