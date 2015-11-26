@@ -16,8 +16,13 @@
   <!-- endbower -->
   <!-- endbuild -->
   <!-- build:css(.tmp) styles/main.css -->
-  <link rel="stylesheet" href="styles/main.css">
+
+  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles/fuelux.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker3.min.css">
   <link rel="stylesheet" href="styles/activity_tree.css">
+
+
 
   <!-- endbuild -->
   <!-- build:js scripts/vendor/modernizr.js -->
@@ -149,20 +154,26 @@
           <div>
 
 
-        <span class="h5"> <span class="glyphicon glyphicon-folder-open clickable " aria-hidden="true"></span>  &nbsp;  {{container_name}} </span>
+        <span class="h5 container_name"> {{container_name}} </span>
 
 
 
           <div class="btn-group navbar-right" role="group" aria-label="..." >
-            <button type="button" class="btn btn-default">Flujo</button>
-            <button type="button" class="btn btn-default">Reglas</button>
-            <button type="button" class="btn btn-default">Rollup </button>
+            <button type="button" class="btn btn-default  clickable  deleteBtn"><span class="glyphicon glyphicon-trash  clickable  deleteBtn" aria-hidden="true"></span></button>
+
+          </div>
+
+        <div class="btn-group navbar-right" role="group" aria-label="..." >
+            <button type="button" class="btn btn-default  clickable   containerPrecondition">Precondition</button>
+            <button type="button" class="btn btn-default  clickable   containerRollup">Rollup</button>
+
+
           </div>
 
           <div class="btn-group navbar-right" role="group" aria-label="..." >
-            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-eye-open clickable" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-cog clickable" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default  clickable  deleteBtn"><span class="glyphicon glyphicon-trash  clickable  deleteBtn" aria-hidden="true"></span></button>
+            <button type="button" class="btn btn-default clickable   containerEditBtn"><span class="glyphicon glyphicon-cog clickable containerEditBtn" aria-hidden="true"></span></button>
+            <button type="button" class="btn btn-default clickable   containerFromUntil"><span class="glyphicon glyphicon-calendar clickable" aria-hidden="true"></span></button>
+
           </div>
         </div>
  </li>
@@ -174,10 +185,6 @@
         <li id="{{ activity_uri  }}"  data-module="activity">
           <div>
             <span class="h5"><span class="glyphicon glyphicon-file clickable" aria-hidden="true"></span>  &nbsp;  {{activity_name}} </span>
-
-
-
-
           <div class="btn-group navbar-right" role="group" aria-label="..." >
             <button type="button" class="btn btn-default">Flujo</button>
             <button type="button" class="btn btn-default">Reglas</button>
@@ -185,8 +192,7 @@
           </div>
 
           <div class="btn-group navbar-right" role="group" aria-label="..." >
-            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-eye-open clickable" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-cog clickable" aria-hidden="true"></span></button>
+            <button type="button" class="btn btn-default "><span class="glyphicon glyphicon-cog clickable" aria-hidden="true"></span></button>
             <button type="button" class="btn btn-default  clickable  deleteBtn"><span class="glyphicon glyphicon-trash  clickable  deleteBtn" aria-hidden="true"></span></button>
           </div>
         </div>
@@ -194,22 +200,14 @@
 </script>
 
 
-
 <!-- build:js(.) scripts/plugins.js -->
-<script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/affix.js"></script>
-<script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/alert.js"></script>
-<script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/dropdown.js"></script>
-<script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/tooltip.js"></script>
-<script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/modal.js"></script>
-<script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/transition.js"></script>
-<script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/button.js"></script>
-<script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/popover.js"></script>
-<script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/carousel.js"></script>
-<script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/scrollspy.js"></script>
-<script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/collapse.js"></script>
-<script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/tab.js"></script>
-<script src="/bower_components/jquery-sortable-lists/jquery-sortable-lists.js"></script>
-<script src="/bower_components/fuelux/js/all.js"></script>
+
+<script src="/bower_components/jquery/dist/jquery.min.js"></script>
+<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/bower_components/fuelux/dist/js/fuelux.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.min.js"></script>
+<script src="/bower_components/jquery-sortable-lists/jquery-sortable-lists.min.js"></script>
 <script src="/bower_components/mustache.js/mustache.js"></script>
 
 
@@ -286,6 +284,32 @@
 
     $('#sTree2, #sTree').sortableLists(options);
 
+    learning_activities = [];
+    var LearningActivity = function (uri, is_container)
+    {
+      this.name = "Container Name";
+      this.heading = "heading";
+      this.secondary_text = "s";
+      this.description = "s";
+      this.image =  "i";
+      this.slug = "g";
+      this.uri =  uri;
+      this.lom = null;
+      this.pre_condition_rule  =  null;
+      this.choice_exit =  false;
+      this.rollup_rule  = "completed IF All completed"
+
+      this.rollup_progress = true;
+      this.available_from =  null;
+      this.available_until = null;
+      this.is_container = is_container;
+      this.is_visible = true;
+    };
+
+    // CREATE MODALS FROM TEMPLATES
+
+
+
     $('#toArrBtn').on('click', function(){ console.log($('#sTree2').sortableListsToArray()); });
     $('#toHierBtn').on('click', function() { console.log($('#sTree2').sortableListsToHierarchy()); });
     $('#toStrBtn').on('click', function() { console.log($('#sTree2').sortableListsToString()); });
@@ -312,10 +336,18 @@
     $('#newContainerBtn').on('click', function(){
 
       var container_template = $('#container_template').html();
-      console.log(container_template);
+
       Mustache.parse(container_template);
-      rendered = Mustache.render(container_template, { container_uri:generateUUID(), container_name:"Container Name"});
+
+      var container = new LearningActivity( "activity/"+generateUUID(),true );
+      learning_activities[container.uri]=container;
+
+      rendered = Mustache.render(container_template, { container_uri:container.uri, container_name:container.name});
       $("#sTree2").append(rendered);
+
+
+
+
     });
 
 
@@ -324,29 +356,315 @@
     });
 
 
+
+    $('body').on('click', '.containerEditBtn', function(){
+
+      var container_id  = $( this).parentsUntil('li').parent().attr("id");
+      var learning_activity = learning_activities[container_id];
+      console.log(learning_activity.name);
+
+      $('#containerName').val(learning_activity.name);
+      $('#containerSecondaryText').val(learning_activity.secondary_text);
+      $('#containerHeading').val(learning_activity.heading);
+      $('#containerDescription').val(learning_activity.description);
+      $('#containerImage').val(learning_activity.image);
+      $('#containerSlug').val(learning_activity.slug);
+      $('#containerURI').val(learning_activity.uri);
+
+
+      $('#container_image').attr("src",learning_activity.uri);
+
+      if (learning_activity.is_visible)
+      {
+        $('#containerIsHidden').removeAttr("checked");
+      }
+      else{
+        console.log(learning_activity.is_visible);
+
+        $('#containerIsHidden').attr("checked","checked");
+      }
+
+      $('#modalContainer').modal(options);
+
+    });
+
+    $('#modalContainer').on('hide.bs.modal',function (e) {
+      console.log("Close");
+      });
+
+     $('#saveContinerEditBtn').on('click',function (e) {
+
+       var container_id  = $('#containerURI').val();
+       learning_activities[container_id].name = $('#containerName').val();
+       learning_activities[container_id].secondary_text =  $('#containerSecondaryText').val();
+       learning_activities[container_id].heading = $('#containerHeading').val();
+       learning_activities[container_id].description=$('#containerDescription').val();
+       learning_activities[container_id].image=$('#containerImage').val();
+       learning_activities[container_id].slug=$('#containerSlug').val();
+       var escaped_container_id = "#" + container_id.replace( "/", "\\/" );
+
+       $(escaped_container_id).find('.container_name').first().text(learning_activities[container_id].name);
+
+       $('#modalContainer').modal('hide');
+
+
+     });
+
+
+
+
+
     $('#newActivityBtn').on('click', function(){
 
       var activity_template = $('#activity_template').html();
-      console.log(activity_template);
+
       Mustache.parse(activity_template);
       rendered = Mustache.render(activity_template, { activity_uri:generateUUID(), activity_name:"Activity Name"});
       $("#sTree2").append(rendered);
     });
+  });
+
+  $('body').on('click', '.containerFromUntil', function(){
+
+    var activity_template = $('#container_modal_from_until').html();
+    console.log(activity_template);
+    Mustache.parse(activity_template);
+    rendered = Mustache.render(activity_template, { activity_uri:generateUUID(), activity_name:"Activity Name"});
+    $("body").append(rendered);
+
+    var container_id  = $( this).parentsUntil('li').parent().attr("id");
+    //console.log(container_id);
+    options = {container_id:container_id};
+
+    $('#available-from').datepicker({
+      autoclose: true
+    });
+    $('#available-to').datepicker({
+      autoclose: true
+    });
 
 
+    $('#modalFromUntil').modal(options)
 
 
   });
 
 
+  $('body').on('click', '.containerPrecondition', function(){
+
+    var activity_template = $('#container_modal_precondition').html();
+    console.log(activity_template);
+    Mustache.parse(activity_template);
+    rendered = Mustache.render(activity_template, { activity_uri:generateUUID(), activity_name:"Activity Name"});
+    $("body").append(rendered);
+
+    var container_id  = $( this).parentsUntil('li').parent().attr("id");
+    //console.log(container_id);
+    options = {container_id:container_id};
+
+    $('#modalPrecondition').modal(options)
+
+
+  });
+
+  $('body').on('click', '.containerRollup', function(){
+
+    var activity_template = $('#container_modal_rollup').html();
+    Mustache.parse(activity_template);
+    rendered = Mustache.render(activity_template, { activity_uri:generateUUID(), activity_name:"Activity Name"});
+    $("body").append(rendered);
+
+    var container_id  = $( this).parentsUntil('li').parent().attr("id");
+    //console.log(container_id);
+    options = {container_id:container_id};
+
+    $('#modalRollup').modal(options)
+
+
+  });
 
 
 </script>
 
 
+<div class="modal fade" id="modalContainer">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Edit Container</h4>
+      </div>
+
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="containerURI">URL</label>
+          <input type="url" class="form-control" id="containerURI" placeholder="" required pattern="https?://.+" disabled>
+        </div>
+        <div class="form-group">
+          <label for="containerName">Display Name</label>
+          <input type="text" class="form-control" id="containerName" placeholder="Container Name">
+        </div>
+        <div class="form-group">
+          <label for="containerSlug">Slug</label>
+          <input type="url" class="form-control" id="containerSlug" placeholder="" required pattern="https?://.+">
+        </div>
+
+        <div class="form-group">
+          <label for="containerHeading">Header</label>
+          <input type="url" class="form-control" id="containerHeading" placeholder="" required pattern="https?://.+">
+        </div>
+        <div class="form-group">
+          <label for="containerSecondaryText">Secondary Text</label>
+          <input type="url" class="form-control" id="containerSecondaryText" placeholder="" required pattern="https?://.+">
+        </div>
+        <div class="form-group">
+          <label for="containerDescription">Description</label>
+          <textarea class="form-control" id="containerDescription" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="containerImage">Image URL</label>
+          <input type="url" class="form-control" id="containerImage" placeholder="" required pattern="https?://.+">
+
+        </div>
+        <div class="row">
+
+          <img id="container_image" src="http://img.src.ca/2014/07/03/635x357/140703_pg6ew_mlarge_obession_performance_sn635.jpg" alt="..." class="img-rounded fixed-small center-block">
+
+        </div>
 
 
 
 
+
+        <div class="form-group">
+          <div class="checkbox">
+            <label> <input id="containerIsHidden" type="checkbox"> Hidden </label>
+          </div>
+        </div>
+
+      </div><!-- /.modal-body -->
+
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="saveContinerEditBtn" type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modalPrecondition">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Edit Container</h4>
+      </div>
+
+
+      <div class="modal-body">
+
+        <div class="form-group">
+          <label for="containerPrecondition">Precondition Rule</label>
+          <textarea class="form-control" id="containerPrecondition" rows="3"></textarea>
+        </div>
+
+
+      </div><!-- /.modal-body -->
+
+
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+
+
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modalFromUntil">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Edit Container</h4>
+      </div>
+
+
+      <div class="modal-body">
+
+
+        <div class="form-group">
+          <label for="available-from">Available from</label>
+          <div id ="available-from" class="input-group date">
+            <input type="text" class="form-control"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+          </div>
+        </div>
+
+
+
+
+        <div class="form-group">
+          <label for="available-to">Available until</label>
+          <div id ="available-to" class="input-group date">
+            <input type="text" class="form-control"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+          </div>
+        </div>
+
+      </div><!-- /.modal-body -->
+
+
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+
+
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modalRollup">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Edit Container</h4>
+      </div>
+
+
+      <div class="modal-body">
+
+        <div class="form-group">
+          <label for="containerRollupRule">Rollup Rule</label>
+          <textarea class="form-control" id="containerRollupRule" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox">
+            <label> <input type="checkbox"> Dont Rollup Progress </label>
+          </div>
+        </div>
+
+      </div><!-- /.modal-body -->
+
+
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+
+
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 </body>
 </html>
