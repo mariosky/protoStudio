@@ -147,16 +147,12 @@
 <!-- endbower -->
 <!-- endbuild -->
 
-
 <script id="container_template" type="x-tmpl-mustache">
 
         <li id="{{ container_uri  }}"  data-module="container">
           <div>
 
-
         <span class="h5 container_name"> {{container_name}} </span>
-
-
 
           <div class="btn-group navbar-right" role="group" aria-label="..." >
             <button type="button" class="btn btn-default  clickable  deleteBtn"><span class="glyphicon glyphicon-trash  clickable  deleteBtn" aria-hidden="true"></span></button>
@@ -175,8 +171,9 @@
             <button type="button" class="btn btn-default clickable   containerFromUntil"><span class="glyphicon glyphicon-calendar clickable" aria-hidden="true"></span></button>
 
           </div>
-        </div>
+      </div>
  </li>
+
 </script>
 
 
@@ -288,11 +285,11 @@
     var LearningActivity = function (uri, is_container)
     {
       this.name = "Container Name";
-      this.heading = "heading";
-      this.secondary_text = "s";
-      this.description = "s";
-      this.image =  "i";
-      this.slug = "g";
+      this.heading = "";
+      this.secondary_text = "";
+      this.description = "";
+      this.image =  "";
+      this.slug = "";
       this.uri =  uri;
       this.lom = null;
       this.pre_condition_rule  =  null;
@@ -388,11 +385,7 @@
 
     });
 
-    $('#modalContainer').on('hide.bs.modal',function (e) {
-      console.log("Close");
-      });
-
-     $('#saveContinerEditBtn').on('click',function (e) {
+     $('#saveContainerEditBtn').on('click',function (e) {
 
        var container_id  = $('#containerURI').val();
        learning_activities[container_id].name = $('#containerName').val();
@@ -426,15 +419,14 @@
 
   $('body').on('click', '.containerFromUntil', function(){
 
-    var activity_template = $('#container_modal_from_until').html();
-    console.log(activity_template);
-    Mustache.parse(activity_template);
-    rendered = Mustache.render(activity_template, { activity_uri:generateUUID(), activity_name:"Activity Name"});
-    $("body").append(rendered);
-
     var container_id  = $( this).parentsUntil('li').parent().attr("id");
-    //console.log(container_id);
-    options = {container_id:container_id};
+    var learning_activity = learning_activities[container_id];
+    console.log(learning_activity.name);
+
+    $('#available-from').val(learning_activity.available_from);
+    $('#available-until').val(learning_activity.available_until);
+    $('#FromUntilURI').val(learning_activity.uri);
+
 
     $('#available-from').datepicker({
       autoclose: true
@@ -448,6 +440,25 @@
 
 
   });
+
+  $('#saveFromUntilBtn').on('click',function (e) {
+
+    var container_id  = $('#FromUntilURI').val();
+    learning_activities[container_id].name = $('#containerName').val();
+    learning_activities[container_id].secondary_text =  $('#containerSecondaryText').val();
+    learning_activities[container_id].heading = $('#containerHeading').val();
+    learning_activities[container_id].description=$('#containerDescription').val();
+    learning_activities[container_id].image=$('#containerImage').val();
+    learning_activities[container_id].slug=$('#containerSlug').val();
+    var escaped_container_id = "#" + container_id.replace( "/", "\\/" );
+
+    $(escaped_container_id).find('.container_name').first().text(learning_activities[container_id].name);
+
+    $('#modalContainer').modal('hide');
+
+
+  });
+
 
 
   $('body').on('click', '.containerPrecondition', function(){
@@ -548,7 +559,7 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button id="saveContinerEditBtn" type="button" class="btn btn-primary">Save changes</button>
+        <button id="saveContainerEditBtn" type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -577,7 +588,7 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button id="savePreconditionBtn" type="button" class="btn btn-primary">Save changes</button>
       </div>
 
 
@@ -597,6 +608,11 @@
 
       <div class="modal-body">
 
+        <div class="form-group">
+          <label for="FromUntilURI">URL</label>
+          <input type="url" class="form-control" id="FromUntilURI" placeholder="" required pattern="https?://.+" disabled>
+        </div>
+
 
         <div class="form-group">
           <label for="available-from">Available from</label>
@@ -609,8 +625,8 @@
 
 
         <div class="form-group">
-          <label for="available-to">Available until</label>
-          <div id ="available-to" class="input-group date">
+          <label for="available-until">Available until</label>
+          <div id ="available-until" class="input-group date">
             <input type="text" class="form-control"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
           </div>
         </div>
@@ -621,7 +637,7 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button id="saveFromUntilBtn" type="button" class="btn btn-primary">Save changes</button>
       </div>
 
 
@@ -658,7 +674,7 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button id="saveRollup" type="button" class="btn btn-primary">Save changes</button>
       </div>
 
 
