@@ -19,6 +19,7 @@
 
   <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="styles/fuelux.min.css">
+  <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker3.min.css">
   <link rel="stylesheet" href="styles/activity_tree.css">
 
@@ -152,10 +153,10 @@
         <li id="{{ container_uri  }}"  data-module="container">
           <div>
 
-        <span class="h5 container_name"> {{container_name}} </span>
+        <i class="fa fa-folder"></i>  <span class="h5 container_name"> {{container_name}} </span>
 
           <div class="btn-group navbar-right" role="group" aria-label="..." >
-            <button type="button" class="btn btn-default  clickable  deleteBtn"><span class="glyphicon glyphicon-trash  clickable  deleteBtn" aria-hidden="true"></span></button>
+            <button type="button" class="btn btn-default  clickable  deleteBtn"><i class="fa fa-trash-o clickable"></i></button>
 
           </div>
 
@@ -167,8 +168,8 @@
           </div>
 
           <div class="btn-group navbar-right" role="group" aria-label="..." >
-            <button type="button" class="btn btn-default clickable   containerEditBtn"><span class="glyphicon glyphicon-cog clickable containerEditBtn" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default clickable   containerFromUntil"><span class="glyphicon glyphicon-calendar clickable" aria-hidden="true"></span></button>
+            <button type="button" class="btn btn-default clickable   containerEditBtn"><i class="fa fa-cog clickable containerEditBtn"></i> </button>
+            <button type="button" class="btn btn-default clickable   containerFromUntil"><i class="fa fa-calendar  clickable  containerFromUnti"></i></button>
 
           </div>
       </div>
@@ -181,16 +182,21 @@
 
         <li id="{{ activity_uri  }}"  data-module="activity">
           <div>
-            <span class="h5"><span class="glyphicon glyphicon-file clickable" aria-hidden="true"></span>  &nbsp;  {{activity_name}} </span>
+            <i class="fa fa-file"></i> <span class="h5 container_name">{{activity_name}} </span>
+
           <div class="btn-group navbar-right" role="group" aria-label="..." >
-            <button type="button" class="btn btn-default">Flujo</button>
-            <button type="button" class="btn btn-default">Reglas</button>
-            <button type="button" class="btn btn-default">Rollup </button>
+            <button type="button" class="btn btn-default  clickable  deleteBtn"><i class="fa fa-trash-o clickable"></i></button>
+          </div>
+
+            <div class="btn-group navbar-right" role="group" aria-label="..." >
+                <button type="button" class="btn btn-default  clickable   activityEditBtn">Activity</button>
+                <button type="button" class="btn btn-default  clickable   containerPrecondition">Precondition</button>
+                <button type="button" class="btn btn-default  clickable   containerRollup">Rollup</button>
           </div>
 
           <div class="btn-group navbar-right" role="group" aria-label="..." >
-            <button type="button" class="btn btn-default "><span class="glyphicon glyphicon-cog clickable" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default  clickable  deleteBtn"><span class="glyphicon glyphicon-trash  clickable  deleteBtn" aria-hidden="true"></span></button>
+            <button type="button" class="btn btn-default clickable   containerEditBtn"><i class="fa fa-cog clickable containerEditBtn"></i> </button>
+            <button type="button" class="btn btn-default clickable   containerFromUntil"><i class="fa fa-calendar  clickable  containerFromUnti"></i></button>
           </div>
         </div>
  </li>
@@ -293,9 +299,10 @@
       this.uri =  uri;
       this.lom = null;
       this.pre_condition_rule  =  null;
-      this.choice_exit =  false;
-      this.rollup_rule  = "completed IF All completed"
+      this.choice_exit = true;
+      this.rollup_rule = "completed IF All completed";
 
+      this.attempt_limit = 100;
       this.rollup_progress = true;
       this.available_from =  null;
       this.available_until = null;
@@ -308,7 +315,56 @@
 
 
     $('#toArrBtn').on('click', function(){ console.log($('#sTree2').sortableListsToArray()); });
-    $('#toHierBtn').on('click', function() { console.log($('#sTree2').sortableListsToHierarchy()); });
+    $('#toHierBtn').on('click', function()
+    {
+
+         tree =  $('#sTree2').sortableListsToHierarchy();
+
+
+
+         function traverse(jsonObj) {
+           if( typeof jsonObj == "object" ) {
+              $.each(jsonObj, function(k,v) {
+                console.log(k);
+
+                if (typeof k == "number" && typeof v == "object")
+                {
+                  traverse(v);
+                }
+
+                if ( k == "id")
+                {
+                  jsonObj.learning_activity = learning_activities[v];
+
+                }
+
+                if ( k == "children" && typeof v == "object")
+                {
+                  traverse(v);
+
+                }
+              });
+              }
+              else
+              {
+                return;
+                // jsonOb is a number or string
+              }
+           }
+
+          traverse(tree);
+
+
+
+            console.log(JSON.stringify(tree));
+
+
+
+
+
+
+
+    });
     $('#toStrBtn').on('click', function() { console.log($('#sTree2').sortableListsToString()); });
 
     $('.descPicture').on('click', function(e) { $(this).toggleClass('descPictureClose'); });
@@ -333,7 +389,6 @@
     $('#newContainerBtn').on('click', function(){
 
       var container_template = $('#container_template').html();
-
       Mustache.parse(container_template);
 
       var container = new LearningActivity( "activity/"+generateUUID(),true );
@@ -341,11 +396,24 @@
 
       rendered = Mustache.render(container_template, { container_uri:container.uri, container_name:container.name});
       $("#sTree2").append(rendered);
-
-
-
-
     });
+
+
+
+
+    $('#newActivityBtn').on('click', function(){
+
+      var activity_template = $('#activity_template').html();
+      Mustache.parse(activity_template);
+
+      var activity = new LearningActivity( "activity/"+generateUUID(), false );
+      learning_activities[activity.uri]=activity;
+
+      rendered = Mustache.render(activity_template, { activity_uri:activity.uri, activity_name:"Activity Name"});
+      $("#sTree2").append(rendered);
+    });
+  });
+
 
 
     $('body').on('click', '.deleteBtn', function(){
@@ -353,12 +421,69 @@
     });
 
 
+  $('body').on('click', '.activityEditBtn', function(){
+
+    var container_id  = $( this).parentsUntil('li').parent().attr("id");
+
+    var learning_activity = learning_activities[container_id];
+
+    $('#activityURI').val(learning_activity.uri);
+    $('#maxAttempts').val(learning_activity.attempt_limit);
+
+    $('#activityRollupProgressCb').val(learning_activity.secondary_text);
+
+
+    $('#activityExitCb').val(learning_activity.heading);
+    $('#modalActivity').modal();
+
+  });
+
+  $('body').on('click','#saveActivityBtn',function (e) {
+    var container_id  = $('#activityURI').val();
+    learning_activities[container_id].attempt_limit = $('#maxAttempts').val();
+
+
+
+    if ( $('#activityRollupProgressCb').prop("checked") == true)
+    {
+      learning_activities[container_id].is_visible = true;
+    }
+    else
+    {
+      learning_activities[container_id].is_visible = false;
+    }
+
+    if ( $('#activityExitCb').prop("checked") == true)
+    {
+      learning_activities[container_id].choice_exit = true;
+    }
+    else
+    {
+      learning_activities[container_id].choice_exit = false;
+    }
+
+
+
+    $('#modalActivity').modal('hide');
+
+
+  });
+
+
 
     $('body').on('click', '.containerEditBtn', function(){
 
       var container_id  = $( this).parentsUntil('li').parent().attr("id");
       var learning_activity = learning_activities[container_id];
-      console.log(learning_activity.name);
+
+      if (learning_activity.is_container == true)
+      {
+        $("#modalContainer").find(".modal-title").text("Edit Container");
+      }
+      else{
+        $("#modalContainer").find(".modal-title").text("Edit Activity");
+
+      }
 
       $('#containerName').val(learning_activity.name);
       $('#containerSecondaryText').val(learning_activity.secondary_text);
@@ -367,61 +492,77 @@
       $('#containerImage').val(learning_activity.image);
       $('#containerSlug').val(learning_activity.slug);
       $('#containerURI').val(learning_activity.uri);
+      $('#changeURI').val(learning_activity.uri);
 
 
       $('#container_image').attr("src",learning_activity.uri);
 
       if (learning_activity.is_visible)
       {
-        $('#containerIsHidden').removeAttr("checked");
+
+        $('#containerIsVisible').prop("checked",true);
+
       }
       else{
-        console.log(learning_activity.is_visible);
-
-        $('#containerIsHidden').attr("checked","checked");
+        $('#containerIsVisible').prop("checked",false);
       }
 
-      $('#modalContainer').modal(options);
+      $('#modalContainer').modal();
 
     });
 
-     $('#saveContainerEditBtn').on('click',function (e) {
+    $('body').on('click','#saveContainerEditBtn',function (e) {
 
-       var container_id  = $('#containerURI').val();
-       learning_activities[container_id].name = $('#containerName').val();
-       learning_activities[container_id].secondary_text =  $('#containerSecondaryText').val();
-       learning_activities[container_id].heading = $('#containerHeading').val();
-       learning_activities[container_id].description=$('#containerDescription').val();
-       learning_activities[container_id].image=$('#containerImage').val();
-       learning_activities[container_id].slug=$('#containerSlug').val();
-       var escaped_container_id = "#" + container_id.replace( "/", "\\/" );
+      var container_id  = $('#containerURI').val();
+      learning_activities[container_id].name = $('#containerName').val();
+      learning_activities[container_id].secondary_text =  $('#containerSecondaryText').val();
+      learning_activities[container_id].heading = $('#containerHeading').val();
+      learning_activities[container_id].description=$('#containerDescription').val();
+      learning_activities[container_id].image=$('#containerImage').val();
+      learning_activities[container_id].slug=$('#containerSlug').val();
+      var escaped_container_id = "#" + container_id.replace( "/", "\\/" );
 
-       $(escaped_container_id).find('.container_name').first().text(learning_activities[container_id].name);
-
-       $('#modalContainer').modal('hide');
-
-
-     });
+      $(escaped_container_id).find('.container_name').first().text(learning_activities[container_id].name);
 
 
 
+      if ( $('#containerIsVisible').prop("checked") == true)
+      {
+        learning_activities[container_id].is_visible = true;
+      }
+      else
+      {
+        learning_activities[container_id].is_visible = false;
+      }
 
+      var change_uri =  $('#changeURI').val();
 
-    $('#newActivityBtn').on('click', function(){
+      if (container_id != change_uri )
+      {
+        // Change object key
+        var current_activity =   learning_activities[container_id];
+        current_activity.uri = change_uri;
+        learning_activities[current_activity.uri] = current_activity;
+        //Delete old entry
+        delete learning_activities[container_id]
+        //Change id in List
+        $(escaped_container_id).attr('id',change_uri)
+      }
+      $('#modalContainer').modal('hide');
 
-      var activity_template = $('#activity_template').html();
-
-      Mustache.parse(activity_template);
-      rendered = Mustache.render(activity_template, { activity_uri:generateUUID(), activity_name:"Activity Name"});
-      $("#sTree2").append(rendered);
     });
-  });
+
+
+
+
+
 
   $('body').on('click', '.containerFromUntil', function(){
 
+
     var container_id  = $( this).parentsUntil('li').parent().attr("id");
     var learning_activity = learning_activities[container_id];
-    console.log(learning_activity.name);
+
 
     $('#available-from').val(learning_activity.available_from);
     $('#available-until').val(learning_activity.available_until);
@@ -431,65 +572,120 @@
     $('#available-from').datepicker({
       autoclose: true
     });
-    $('#available-to').datepicker({
+    $('#available-until').datepicker({
       autoclose: true
     });
 
+    if (learning_activity.is_container == true)
+    {
+      $("#modalFromUntil").find(".modal-title").text("Edit Container");
+    }
+    else{
+      $("#modalFromUntil").find(".modal-title").text("Edit Activity");
 
-    $('#modalFromUntil').modal(options)
+    }
+
+
+    $('#modalFromUntil').modal();
 
 
   });
 
-  $('#saveFromUntilBtn').on('click',function (e) {
+
+  $('body').on('click','#saveFromUntilBtn',function (e) {
 
     var container_id  = $('#FromUntilURI').val();
-    learning_activities[container_id].name = $('#containerName').val();
-    learning_activities[container_id].secondary_text =  $('#containerSecondaryText').val();
-    learning_activities[container_id].heading = $('#containerHeading').val();
-    learning_activities[container_id].description=$('#containerDescription').val();
-    learning_activities[container_id].image=$('#containerImage').val();
-    learning_activities[container_id].slug=$('#containerSlug').val();
-    var escaped_container_id = "#" + container_id.replace( "/", "\\/" );
+    learning_activities[container_id].available_from = $('#containerName').val();
+    learning_activities[container_id].available_until =  $('#containerSecondaryText').val();
 
-    $(escaped_container_id).find('.container_name').first().text(learning_activities[container_id].name);
-
-    $('#modalContainer').modal('hide');
+    $('#modalFromUntil').modal('hide');
 
 
   });
-
 
 
   $('body').on('click', '.containerPrecondition', function(){
 
-    var activity_template = $('#container_modal_precondition').html();
-    console.log(activity_template);
-    Mustache.parse(activity_template);
-    rendered = Mustache.render(activity_template, { activity_uri:generateUUID(), activity_name:"Activity Name"});
-    $("body").append(rendered);
-
     var container_id  = $( this).parentsUntil('li').parent().attr("id");
-    //console.log(container_id);
-    options = {container_id:container_id};
+    var learning_activity = learning_activities[container_id];
+    $('#containerPrecondition').val(learning_activity.pre_condition_rule );
+    $('#PreconditionURI').val(learning_activity.uri);
 
-    $('#modalPrecondition').modal(options)
+
+    if (learning_activity.is_container == true)
+    {
+      $("#modalPrecondition").find(".modal-title").text("Edit Container");
+    }
+    else{
+      $("#modalPrecondition").find(".modal-title").text("Edit Activity");
+
+    }
+
+
+    $('#modalPrecondition').modal();
+
+  });
+
+
+  $('body').on('click','#savePreconditionBtn',function (e) {
+    var container_id  = $('#PreconditionURI').val();
+    learning_activities[container_id].pre_condition_rule = $('#containerPrecondition').val();
+
+    $('#modalPrecondition').modal('hide');
 
 
   });
 
+
   $('body').on('click', '.containerRollup', function(){
 
-    var activity_template = $('#container_modal_rollup').html();
-    Mustache.parse(activity_template);
-    rendered = Mustache.render(activity_template, { activity_uri:generateUUID(), activity_name:"Activity Name"});
-    $("body").append(rendered);
 
     var container_id  = $( this).parentsUntil('li').parent().attr("id");
-    //console.log(container_id);
-    options = {container_id:container_id};
+    var learning_activity = learning_activities[container_id];
+    $('#containerRollupRule').val(learning_activity.rollup_rule );
+    $('#rollupURI').val(learning_activity.uri);
 
-    $('#modalRollup').modal(options)
+    if (learning_activity.is_container == true)
+    {
+      $("#modalRollup").find(".modal-title").text("Edit Container");
+    }
+    else{
+      $("#modalRollup").find(".modal-title").text("Edit Activity");
+
+    }
+
+    if (learning_activity.rollup_progress)
+    {
+
+      $('#rollupProgressCb').prop("checked",true);
+
+    }
+    else{
+
+      $('#rollupProgressCb').prop("checked",false);
+    }
+
+
+    $('#modalRollup').modal()
+
+
+  });
+
+
+  $('body').on('click','#saveRollupBtn',function (e) {
+
+    var container_id  = $('#rollupURI').val();
+    learning_activities[container_id].rollup_rule = $('#containerRollupRule').val();
+
+    if ( $('#rollupProgressCb').prop("checked") == true)
+    {
+      learning_activities[container_id].rollup_progress = true;
+    }
+    else
+    {
+      learning_activities[container_id].rollup_progress = false;
+    }
+        $('#modalRollup').modal('hide');
 
 
   });
@@ -509,9 +705,14 @@
 
       <div class="modal-body">
         <div class="form-group">
-          <label for="containerURI">URL</label>
-          <input type="url" class="form-control" id="containerURI" placeholder="" required pattern="https?://.+" disabled>
+          <input type="text" class="form-control hidden" id="containerURI" placeholder="" required pattern="https?://.+" disabled>
         </div>
+
+        <div class="form-group">
+          <label for="containerURI">URL</label>
+          <input type="text" class="form-control" id="changeURI" placeholder="" required pattern="https?://.+" >
+        </div>
+
         <div class="form-group">
           <label for="containerName">Display Name</label>
           <input type="text" class="form-control" id="containerName" placeholder="Container Name">
@@ -550,7 +751,7 @@
 
         <div class="form-group">
           <div class="checkbox">
-            <label> <input id="containerIsHidden" type="checkbox"> Hidden </label>
+            <label> <input id="containerIsVisible" type="checkbox"> Visible </label>
           </div>
         </div>
 
@@ -575,6 +776,11 @@
 
 
       <div class="modal-body">
+
+        <div class="form-group">
+
+          <input type="url" class="form-control hidden" id="PreconditionURI" placeholder="" required pattern="https?://.+" disabled>
+        </div>
 
         <div class="form-group">
           <label for="containerPrecondition">Precondition Rule</label>
@@ -609,8 +815,8 @@
       <div class="modal-body">
 
         <div class="form-group">
-          <label for="FromUntilURI">URL</label>
-          <input type="url" class="form-control" id="FromUntilURI" placeholder="" required pattern="https?://.+" disabled>
+
+          <input type="url" class="form-control hidden" id="FromUntilURI" placeholder="" required pattern="https?://.+" disabled>
         </div>
 
 
@@ -656,6 +862,10 @@
 
 
       <div class="modal-body">
+        <div class="form-group">
+
+          <input type="url" class="form-control hidden" id="rollupURI" placeholder="" required pattern="https?://.+" disabled>
+        </div>
 
         <div class="form-group">
           <label for="containerRollupRule">Rollup Rule</label>
@@ -664,7 +874,7 @@
 
         <div class="form-group">
           <div class="checkbox">
-            <label> <input type="checkbox"> Dont Rollup Progress </label>
+            <label> <input id="rollupProgressCb" type="checkbox"> Rollup Progress </label>
           </div>
         </div>
 
@@ -674,7 +884,7 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button id="saveRollup" type="button" class="btn btn-primary">Save changes</button>
+        <button id="saveRollupBtn" type="button" class="btn btn-primary">Save changes</button>
       </div>
 
 
@@ -682,5 +892,55 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+
+<div class="modal fade" id="modalActivity">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Edit Activity</h4>
+      </div>
+
+
+      <div class="modal-body">
+        <div class="form-group">
+
+          <input type="url" class="form-control hidden" id="activityURI" placeholder="" required pattern="https?://.+" disabled>
+        </div>
+
+        <div class="form-group">
+          <label for="maxAttempts">Attempt Limit</label>
+          <input type="url" class="form-control" id="maxAttempts" placeholder="" required pattern="https?://.+" >
+        </div>
+
+
+        <div class="form-group">
+          <div class="checkbox">
+            <label> <input id="activityRollupProgressCb" type="checkbox"> Rollup Progress </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox">
+            <label> <input id="activityExitCb" type="checkbox"> Choice Exit   </label>
+          </div>
+        </div>
+
+
+      </div><!-- /.modal-body -->
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="saveActivityBtn" type="button" class="btn btn-primary">Save changes</button>
+      </div>
+
+
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
 </body>
 </html>
