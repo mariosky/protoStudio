@@ -150,7 +150,7 @@
 
 <script id="container_template" type="x-tmpl-mustache">
 
-        <li id="{{ container_uri  }}"  data-module="container">
+        <li id="{{ container_id  }}"  data-module="container">
           <div>
 
         <i class="fa fa-folder"></i>  <span class="h5 container_name"> {{container_name}} </span>
@@ -180,7 +180,7 @@
 
 <script id="activity_template" type="x-tmpl-mustache">
 
-        <li id="{{ activity_uri  }}"  data-module="activity">
+        <li id="{{ activity_id  }}"  data-module="activity">
           <div>
             <i class="fa fa-file"></i> <span class="h5 container_name">{{activity_name}} </span>
 
@@ -325,13 +325,11 @@
          function traverse(jsonObj) {
            if( typeof jsonObj == "object" ) {
               $.each(jsonObj, function(k,v) {
-                console.log(k);
 
                 if (typeof k == "number" && typeof v == "object")
                 {
                   traverse(v);
                 }
-
                 if ( k == "id")
                 {
                   jsonObj.learning_activity = learning_activities[v];
@@ -387,14 +385,14 @@
 
 
     $('#newContainerBtn').on('click', function(){
-
+      var container_id = generateUUID();
       var container_template = $('#container_template').html();
       Mustache.parse(container_template);
 
-      var container = new LearningActivity( "activity/"+generateUUID(),true );
-      learning_activities[container.uri]=container;
+      var container = new LearningActivity( '/activity/'+container_id ,true );
+      learning_activities[container_id]=container;
 
-      rendered = Mustache.render(container_template, { container_uri:container.uri, container_name:container.name});
+      rendered = Mustache.render(container_template, { container_id:container_id, container_name:container.name});
       $("#sTree2").append(rendered);
     });
 
@@ -405,11 +403,11 @@
 
       var activity_template = $('#activity_template').html();
       Mustache.parse(activity_template);
+      var activity_id = generateUUID();
+      var activity = new LearningActivity( "/activity/"+activity_id, false );
+      learning_activities[activity_id]=activity;
 
-      var activity = new LearningActivity( "activity/"+generateUUID(), false );
-      learning_activities[activity.uri]=activity;
-
-      rendered = Mustache.render(activity_template, { activity_uri:activity.uri, activity_name:"Activity Name"});
+      rendered = Mustache.render(activity_template, { activity_id:activity_id, activity_name:"Activity Name"});
       $("#sTree2").append(rendered);
     });
   });
@@ -427,12 +425,10 @@
 
     var learning_activity = learning_activities[container_id];
 
-    $('#activityURI').val(learning_activity.uri);
+    $('#activityURI').val(container_id);
     $('#maxAttempts').val(learning_activity.attempt_limit);
 
     $('#activityRollupProgressCb').val(learning_activity.secondary_text);
-
-
     $('#activityExitCb').val(learning_activity.heading);
     $('#modalActivity').modal();
 
@@ -474,6 +470,7 @@
     $('body').on('click', '.containerEditBtn', function(){
 
       var container_id  = $( this).parentsUntil('li').parent().attr("id");
+
       var learning_activity = learning_activities[container_id];
 
       if (learning_activity.is_container == true)
@@ -491,7 +488,7 @@
       $('#containerDescription').val(learning_activity.description);
       $('#containerImage').val(learning_activity.image);
       $('#containerSlug').val(learning_activity.slug);
-      $('#containerURI').val(learning_activity.uri);
+      $('#containerId').val(container_id);
       $('#changeURI').val(learning_activity.uri);
 
 
@@ -513,13 +510,15 @@
 
     $('body').on('click','#saveContainerEditBtn',function (e) {
 
-      var container_id  = $('#containerURI').val();
+      var container_id  = $('#containerId').val();
       learning_activities[container_id].name = $('#containerName').val();
       learning_activities[container_id].secondary_text =  $('#containerSecondaryText').val();
       learning_activities[container_id].heading = $('#containerHeading').val();
       learning_activities[container_id].description=$('#containerDescription').val();
       learning_activities[container_id].image=$('#containerImage').val();
       learning_activities[container_id].slug=$('#containerSlug').val();
+      learning_activities[container_id].uri =  $('#changeURI').val();
+
       var escaped_container_id = "#" + container_id.replace( "/", "\\/" );
 
       $(escaped_container_id).find('.container_name').first().text(learning_activities[container_id].name);
@@ -535,19 +534,8 @@
         learning_activities[container_id].is_visible = false;
       }
 
-      var change_uri =  $('#changeURI').val();
 
-      if (container_id != change_uri )
-      {
-        // Change object key
-        var current_activity =   learning_activities[container_id];
-        current_activity.uri = change_uri;
-        learning_activities[current_activity.uri] = current_activity;
-        //Delete old entry
-        delete learning_activities[container_id]
-        //Change id in List
-        $(escaped_container_id).attr('id',change_uri)
-      }
+
       $('#modalContainer').modal('hide');
 
     });
@@ -566,7 +554,7 @@
 
     $('#available-from').val(learning_activity.available_from);
     $('#available-until').val(learning_activity.available_until);
-    $('#FromUntilURI').val(learning_activity.uri);
+    $('#FromUntilURI').val(container_id);
 
 
     $('#available-from').datepicker({
@@ -609,7 +597,7 @@
     var container_id  = $( this).parentsUntil('li').parent().attr("id");
     var learning_activity = learning_activities[container_id];
     $('#containerPrecondition').val(learning_activity.pre_condition_rule );
-    $('#PreconditionURI').val(learning_activity.uri);
+    $('#PreconditionURI').val(container_id);
 
 
     if (learning_activity.is_container == true)
@@ -643,7 +631,7 @@
     var container_id  = $( this).parentsUntil('li').parent().attr("id");
     var learning_activity = learning_activities[container_id];
     $('#containerRollupRule').val(learning_activity.rollup_rule );
-    $('#rollupURI').val(learning_activity.uri);
+    $('#rollupURI').val(container_id);
 
     if (learning_activity.is_container == true)
     {
@@ -705,11 +693,11 @@
 
       <div class="modal-body">
         <div class="form-group">
-          <input type="text" class="form-control hidden" id="containerURI" placeholder="" required pattern="https?://.+" disabled>
+          <input type="text" class="form-control hidden" id="containerId" placeholder="" required pattern="https?://.+" disabled>
         </div>
 
         <div class="form-group">
-          <label for="containerURI">URL</label>
+          <label for="changeURI">URL</label>
           <input type="text" class="form-control" id="changeURI" placeholder="" required pattern="https?://.+" >
         </div>
 
