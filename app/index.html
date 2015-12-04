@@ -17,9 +17,9 @@
   <!-- endbuild -->
   <!-- build:css(.tmp) styles/main.css -->
 
-  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles/bootstrap.min.css">
   <link rel="stylesheet" href="styles/fuelux.min.css">
-  <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.css" type="text/css" >
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker3.min.css">
   <link rel="stylesheet" href="styles/activity_tree.css">
 
@@ -184,7 +184,7 @@
 
 <script id="activity_template" type="x-tmpl-mustache">
 
-        <li id="{{ activity_id  }}"  data-module="activity">
+        <li id="{{ activity_id  }}"  data-module="activity" class="activity">
           <div>
             <i class="fa fa-file"></i> <span class="h5 container_name">{{activity_name}} </span>
 
@@ -208,15 +208,17 @@
 </script>
 
 
+
+
 <!-- build:js(.) scripts/plugins.js -->
 
-<script src="/bower_components/jquery/dist/jquery.min.js"></script>
-<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="/bower_components/fuelux/dist/js/fuelux.min.js"></script>
+<script src="scripts/jquery.min.js"></script>
+<script src="scripts/bootstrap.min.js"></script>
+<script src="scripts/jquery-sortable-lists.min.js"></script>
+<script src="scripts/mustache.min.js"></script>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.min.js"></script>
-<script src="/bower_components/jquery-sortable-lists/jquery-sortable-lists.min.js"></script>
-<script src="/bower_components/mustache.js/mustache.js"></script>
 
 
 <!-- endbuild -->

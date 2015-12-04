@@ -1,4 +1,12 @@
 
+
+
+ul.sTree2 li .activity{
+  background-color:#f5f5f5;
+
+}
+
+
 #sTree2 li div.btn-group.navbar-right, #sortableListsBase li div.btn-group.navbar-right
 {   padding: 0px;
   margin-top: -7px;
@@ -70,3 +78,5 @@ img.fixed-small
   height:100px;
   width: 200px;
 }
+
+
